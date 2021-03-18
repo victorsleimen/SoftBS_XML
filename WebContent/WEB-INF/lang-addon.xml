@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language-addon>
+
+	<language-name>xul/html</language-name>
+	
+	<!-- ====================================================== -->
+	<!-- selecting widget UI theme, iceblue as default in v8.5  -->
+	<!-- ====================================================== -->
+	<library-property>
+		<name>org.zkoss.theme.preferred</name>
+		<value>sapphire</value>
+	</library-property>
+	
+	<!-- ====================================================== -->
+	<!-- Define the font size and family -->
+	<!-- ====================================================== -->
+	<library-property>
+		<name>org.zkoss.zul.theme.fontSizeM</name>
+		<value>11px</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.theme.fontSizeS</name>
+		<value>10px</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.theme.fontSizeXS</name>
+		<value>9px</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.theme.fontSizeMS</name>
+		<value>11px</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.theme.fontFamilyT</name>
+		<value>Verdana, Tahoma, Arial, Helvetica, sans-serif</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.theme.fontFamilyC</name>
+		<value>Verdana, Tahoma, Arial, Helvetica, sans-serif</value>
+	</library-property>
+	<!-- default, trendy, os, bs -->
+	<library-property>
+		<name>org.zkoss.zul.Button.mold</name>
+		<value>trendy</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.Menupopup.mold</name>
+		<value>trendy</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zkmax.zul.Navbar.mold</name>
+		<value>trendy</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.Paging.mold</name>
+		<value>trendy</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.Panel.mold</name>
+		<value>trendy</value>
+	</library-property>
+	<!-- turn off borderlayout animation -->	
+	<library-property>
+    	<name>org.zkoss.zul.borderlayout.animation.disabled</name>
+    	<value>true</value>
+	</library-property>
+	<library-property>
+       <name>org.zkoss.zk.ui.EventListener.duplicateIgnored</name>
+       <value>true</value>
+    </library-property>
+    <library-property>
+    	<name>org.zkoss.zul.nativebar</name>
+    	<value>true</value>
+    </library-property>
+	<!-- Hide zk version in ZUL pages -->
+	<library-property>
+		<name>org.zkoss.zk.ui.versionInfo.enabled</name>
+		<value>false</value>
+	</library-property>
+	
+	<!-- ====================================================== -->
+	<!-- Displays the wait indicator on every user action -->
+	<!-- and sets the position -->
+	<!-- ====================================================== -->
+	<library-property>
+		<name>org.zkoss.zul.progressbox.position</name>
+		<value>center,center</value>
+	</library-property>
+	
+	<!-- [ZK EE]
+		Turn on if you want to enable the render-on-demand feature for grid.
+		It improves the performance for huge grids.
+		Default: false
+	-->
+	<library-property>
+		<name>org.zkoss.zul.grid.rod</name>
+		<value>true</value>
+	</library-property>
+	
+	<!-- [ZK EE]
+		Turn on if you want to enable the render-on-demand feature for listbox.
+		It improves the performance for huge listboxes.
+		Default: false
+	-->
+	<library-property>
+		<name>org.zkoss.zul.listbox.rod</name>
+		<value>true</value>
+	</library-property>
+	
+	<!-- Uncommet to control whether the label propeties files are located.
+		Default: /WEB-INF/i3-label.properties
+	-->
+	<library-property>
+		<name>org.zkoss.util.label.web.location</name>
+		<value>/WEB-INF/zk-label.properties</value>
+	</library-property>
+	
+	<!-- Uncommet to control the encoding of the label properties files Default: UTF-8 -->
+	<library-property>
+		<name>org.zkoss.util.label.web.charset</name>
+		<value>UTF-8</value>
+	</library-property>
+	
+	<!-- optional, Map the url pattern for WebSocket connection; 
+	     if this library property is not configured, /zkwm will be used by default -->
+	<library-property>
+	    <name>org.zkoss.zkmax.au.websocket.WebSocketEndPoint.urlPattern</name>
+	    <value>/softbsws/</value>
+	</library-property>
+	
+	<!-- Configure ZUL not to override the standard HTML tags, such as body's margin and padding
+	<library-property>
+		<name>org.zkoss.zul.theme.browserDefault</name>
+		<value>true</value>
+	</library-property>
+	-->
+	
+	<!-- ====================================================== -->
+	<!-- Define properties for commonly used components -->
+	<!-- ====================================================== -->
+	<component>
+		<component-name>decimalbox</component-name>
+		<extends>decimalbox</extends>
+		<property>
+			<property-name>format</property-name>
+			<property-value>#,##0.00</property-value>
+		</property>
+	</component>
+	
+</language-addon>

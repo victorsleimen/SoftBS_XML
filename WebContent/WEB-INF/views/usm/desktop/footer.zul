@@ -1,0 +1,5 @@
+<div hflex="1" vflex="1" sclass="footer">
+	<vbox hflex="1" vflex="1" align="end">
+		<a href="http://www.softlynx-lb.com">http://www.softlynx-lb.com: You are using ZK ${desktop.webApp.version}</a>
+	</vbox>
+</div>

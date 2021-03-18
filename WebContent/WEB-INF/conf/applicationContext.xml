@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:zksp="http://www.zkoss.org/2008/zkspring/core"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+     http://www.zkoss.org/2008/zkspring/core http://www.zkoss.org/2008/zkspring/core/zkspring-core.xsd
+     http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+	<!-- User @Controller, @Component, @Repository, @Service... annotations -->
+	<context:component-scan	base-package="com.softlynx.bs.services" />
+	<context:property-placeholder location="classpath:softbs.properties" ignore-resource-not-found="true" ignore-unresolvable="true" />
+
+	<!-- Enables ZK custom scopes for Spring Beans -->
+	<zksp:zk-config/>
+
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/SoftBS" />
+	    <property name="cache" value="true"/>
+	    <property name="resourceRef" value="true"/>
+	    <property name="lookupOnStartup" value="false"/>
+		<property name="proxyInterface" value="javax.sql.DataSource" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="vendorProperties"	class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="SQL Server">sqlserver</prop>
+				<prop key="DB2">db2</prop>
+				<prop key="Oracle">oracle</prop>
+				<prop key="MySQL">mysql</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="databaseIdProvider" class="org.apache.ibatis.mapping.VendorDatabaseIdProvider">
+		<property name="properties" ref="vendorProperties" />
+	</bean>
+	
+	<!-- If you are using a JEE container and would like Spring to participate in container managed transactions (CMT) -->
+	<!-- <tx:jta-transaction-manager /> -->
+	
+	<!-- Configure MyBatis to use the adapter as part of its SQL session factory bean -->
+	<!-- org.apache.ibatis.transaction.managed.ManagedTransactionFactory
+	     org.mybatis.spring.transaction.SpringManagedTransactionFactory -->
+	<bean id="softTransactionFactory" class="org.mybatis.spring.transaction.SpringManagedTransactionFactory" />
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" /> <!-- dataSourceAdapter, when using spring security -->
+		<property name="configLocation" value="/WEB-INF/views/mybatis-config.xml" /><!-- configure Mybatis using the below configuration property -->
+		<property name="mapperLocations" value="classpath*:com/softlynx/bs/mappers/**/*Map.xml" />
+		<property name="typeAliasesPackage" value="com.softlynx.bs.domain"/>
+		<property name="transactionFactory" ref="softTransactionFactory" />
+		<property name="databaseIdProvider" ref="databaseIdProvider"/>
+	</bean>
+	
+	<bean id="softMapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.softlynx.bs.mappers" />
+		<!-- <property name="annotationClass" value="org.springframework.stereotype.Repository" /> -->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	<bean id="baseAction" class="com.softlynx.bs.common.base.BaseAction" abstract="true" />
+	<bean id="baseBO" class="com.softlynx.bs.common.base.BaseBO" />
+	
+	<!-- ///////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- ////////////////////////////// Spring Security ////////////////////////////////////// -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////// -->
+	
+	<!-- User credentials and privileges stored in the SecurityContext Integration with MyBatis-->
+	<!-- This adapter will delegate the user credentials to every call of the getConnection() method 
+	  of the target DataSource to ensure that the returned connection is for the right user -->
+	<!-- 
+	<bean id="dataSourceAdapter" class="org.springframework.jdbc.datasource.UserCredentialsDataSourceAdapter">
+		<property name="targetDataSource" ref="dataSource" />
+	</bean>
+	 -->
+	
+	<!-- the URL value of /j_spring_security_check is mapped internally to a Servlet filter
+	   with the ID of authenticationFilter as defined in the Spring Security Root Context -->
+   <!-- 
+	<bean id="authenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+	</bean>
+    -->
+
+	<!-- Performs your actual authentication logic -->
+	<!-- 
+	<bean id="databaseAuthenticationProvider" class="com.softlynx.bs.common.cbc.security.DatabaseAuthenticationProvider">
+		<property name="driverClassName" value="${db.driver}" />
+		<property name="url" value="${db.url}" />
+	</bean>
+	 -->
+
+	<!-- Configure Mybatis to use the datasource Adapter -->
+	<!-- 
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceAdapter" />
+		 /// ....... add the above configuration here ....... /// 
+	</bean>
+	 -->
+
+	<!-- Provide the DataSource adapter with user credentials from the SecurityContext -->
+	<!-- 
+	<bean id="credentialsFilter" class="com.softlynx.bs.common.base.SoftCredentialsFilter">
+		<property name="dataSourceAdapter" ref="dataSourceAdapter" />
+	</bean>
+	 -->
+	
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- /// instead of Using a Mapper, you can user the below to define sqlsession in a DAO class /// -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////// -->
+
+	<!--	
+	<bean id="softTransactionFactory" class="org.apache.ibatis.transaction.managed.ManagedTransactionFactory" />
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceAdapter" />
+		<property name="configuration">
+			<bean class="org.apache.ibatis.session.Configuration">
+				<property name="cacheEnabled" value="true" />
+				<property name="lazyLoadingEnabled" value="true" />
+				<property name="multipleResultSetsEnabled" value="true" />
+				<property name="useColumnLabel" value="true" />
+				<property name="useGeneratedKeys" value="false" />
+				<property name="autoMappingBehavior" value="PARTIAL" />
+				<property name="autoMappingUnknownColumnBehavior" value="WARNING" />
+				<property name="defaultExecutorType" value="BATCH" />
+				<property name="defaultStatementTimeout" value="25" />
+				<property name="defaultFetchSize" value="100" />
+				<property name="safeRowBoundsEnabled" value="false" />
+				<property name="mapUnderscoreToCamelCase" value="false" />
+				<property name="localCacheScope" value="SESSION" />
+				<property name="jdbcTypeForNull" value="OTHER" />
+				<property name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString" />				
+			</bean>
+		</property>
+		<property name="mapperLocations" value="classpath*:com/softlynx/bs/mappers/**/*Map.xml" />
+		<property name="typeAliasesPackage" value="com.softlynx.bs.domain" />
+   		<property name="transactionFactory" ref="softTransactionFactory" />
+		<property name="databaseIdProvider" ref="databaseIdProvider"/>
+	</bean>
+	
+	<bean id="sqlMybatisExceptionTranslator" class="org.mybatis.spring.MyBatisExceptionTranslator">
+		<constructor-arg index="0" ref="dataSource" />
+		<constructor-arg index="1" value="true" />
+	</bean>
+
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+		<constructor-arg index="1" value="BATCH" />
+		<constructor-arg index="2" ref="sqlMybatisExceptionTranslator" />
+	</bean>
+
+	<bean id="sqlMapper" class="com.softlynx.bs.common.mybatis.impl.SqlMapper">
+		<property name="sqlSession" ref="sqlSession" />
+	</bean>
+
+	<bean id="baseDAO" class="com.softlynx.bs.common.base.BaseDAO" abstract="true">
+		<property name="sqlMapper" ref="sqlMapper" />
+	</bean>
+	<bean id="baseBO" class="com.softlynx.bs.common.base.BaseBO" />
+	<bean id="baseAction" class="com.softlynx.bs.common.base.BaseAction"  abstract="true" />
+	 -->
+</beans>

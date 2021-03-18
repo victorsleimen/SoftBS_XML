@@ -1,0 +1,48 @@
+<?page id="loginPage" title="Soft Business Solutions"?>
+<?link rel="shortcut icon" href="favicon.ico" type="image/x-icon"?>
+<?link rel="stylesheet" type="text/css" href="/css/normalize.css"?>
+<zk xmlns:w="client" xmlns:n="native" xmlns:h="xhtml">
+	<window id="loginwin" border="none" width="400px" 
+		style="margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-image: url('/images/back_chroma.jpg'); background-position: center;"
+		apply="com.softlynx.bs.controller.usm.login.LoginAction">
+	
+		<!-- this form-login-page form is also used as the form-error-page to ask for a login again. -->
+		<html style="color:red" if="${not empty param.fail}">		
+			<![CDATA[ Your login attempt was not successful, try again.<br/><br/> 
+				Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message} ]]>		
+	    </html>
+	
+		<groupbox>
+			<caption>Login Credentials</caption>
+			<h:form id="formLogin" name="formLogin" action="/j_spring_security_check" method="POST" xmlns:h="http://www.w3.org/1999/xhtml">
+				<grid>
+					<rows>
+						<row>
+							<label value="Username"/>
+							<textbox id="userNameBox" name="j_username" tabindex="0" constraint="no empty: Enter your username" focus="true"/>
+						</row>
+						<row>
+							<label value="Domain"/>
+							<textbox id="domainBox" type="text" name="j_domain" readonly="true" value="SoftBS" />
+						</row>
+						<row>
+							<label value="Password"/>
+							<textbox id="passwordBox" type="password" name="j_password" constraint="no empty: Fill your password"/>
+						</row>
+						<row>
+							<checkbox id="rememberMe" name="j_remember_me" style="align: right;" checked="true"/>
+							<label value="Remember Me"/>
+						</row>
+						<row spans="2">
+							<n:p align="right">
+								<button id="cancelBtn" label="Cancel" />
+								<button id="checkButton" label="Login" />
+							</n:p>
+						</row>
+					</rows>
+				</grid>
+			</h:form>
+		</groupbox>
+		<!-- <label value="You are using ZK version: ${desktop.webApp.version}"/> -->
+	</window>
+</zk>

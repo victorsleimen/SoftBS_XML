@@ -1,0 +1,13 @@
+<zk>
+	<grid viewModel="@id('vm') @init('com.softlynx.bs.SidebarViewModel')"
+		model="@load(vm.sidebarPages)">
+		<rows>
+	        <template name="model">
+	        	<row sclass="sidebar-fn" onClick="@command('navigate', page=each)">
+	                <image src="@load(each.iconUri)"/>
+	                <label value="@load(each.label)"/>
+	            </row>
+	        </template>
+	    </rows>
+	</grid>
+</zk>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk>
+
+	<!-- ====================================================== -->
+	<!-- running a zk application in a CLUSTER -->
+	<!-- ====================================================== -->
+	<system-config>
+		<!-- Enable event thread for modal windows -->
+		<disable-event-thread>true</disable-event-thread> <!-- true for better performance and lower resource usage -->
+		<!-- Enable Cluster environment -->
+		<ui-factory-class>org.zkoss.zk.ui.http.SerializableUiFactory</ui-factory-class>
+		<cache-provider-class>org.zkoss.zk.ui.impl.GlobalDesktopCacheProvider</cache-provider-class>
+	</system-config>
+
+	<!-- ====================================================== -->
+	<!-- Listener to make sure servlet thread -->
+	<!-- and ZK event thread got the same ThreadLocal values. -->
+	<!-- ====================================================== -->
+	<listener>
+		<description>ThreadLocal Synchronization Listener</description>
+		<listener-class>org.zkoss.zkplus.util.ThreadLocalListener</listener-class>
+	</listener>
+
+	<!-- ====================================================== -->
+	<!-- the following listener is used to see # of sessions, desktops -->
+	<!-- ====================================================== -->
+	<listener>
+		<description>[Optional] Monitor the statistic</description>
+		<listener-class>org.zkoss.zk.ui.util.Statistic</listener-class>
+	</listener>
+	
+	<listener>
+		<listener-class>com.softlynx.bs.common.base.SoftDesktopRecycle</listener-class>
+	</listener>
+	
+	<!-- [ZK EE]
+		Turn on if you want to recycle the desktop if an user navigates
+		back to the same URL
+	<listener>
+		<listener-class>org.zkoss.zkmax.ui.util.DesktopRecycle</listener-class>
+	</listener>
+	--> 
+	
+	<!-- enable websockets in ZKEE
+	<listener>
+	    <listener-class>org.zkoss.zkmax.au.websocket.WebSocketWebAppInit</listener-class>
+	</listener>
+	-->
+	
+	<!-- enable InaccessibleWidgetBlockService in ZKEE, or define your own class
+	<listener>
+		<listener-class>org.zkoss.zkmax.au.InaccessibleWidgetBlockService$DesktopInit</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.softlynx.bs.common.cbc.security.SoftBlockService</listener-class>
+	</listener>
+	 -->
+	
+	<!-- ====================================================== -->
+	<!-- Path to the character set and sizes -->
+	<!-- Zkoss configuration file, Custom components are declared here -->
+	<!-- ====================================================== -->
+	<language-config>
+		<addon-uri>/WEB-INF/lang-addon.xml</addon-uri>
+	</language-config>
+
+	<!-- ====================================================== -->
+	<!-- Maximal count of desktops which a session can hold -->
+	<!-- ====================================================== -->
+	<session-config>
+		<device-type>ajax</device-type>
+		<automatic-timeout/> <!-- the same as <automatic-timeout>true</automatic-timeout> -->
+		<max-desktops-per-session>10</max-desktops-per-session> <!-- Next 2 features to prevent against DoS attack -->
+		<max-requests-per-session>-1</max-requests-per-session> <!-- negative value means no limitation -->
+		<timer-keep-alive>true</timer-keep-alive>
+	</session-config>
+
+	<!--  false to use compress js which is much smaller. change to true if you need to debug -->
+	<client-config>
+		<processing-prompt-delay>500</processing-prompt-delay>
+		<!-- Turn on if you want to ignore the consecutive click events, if it happens 
+			too close to the previous one, or the server is still serving the previous click. -->
+		<click-filter-delay>390</click-filter-delay>
+		<!-- It specifies whether to debug JavaScript files, set to false for production -->
+		<debug-js>false</debug-js>
+		<disable-behind-modal>false</disable-behind-modal>
+	    <error-reload>
+	        <device-type>ajax</device-type>
+	        <error-code>301</error-code>
+	        <reload-uri></reload-uri>
+	    </error-reload>
+	    <keep-across-visits>true</keep-across-visits>
+	    <processing-prompt-delay>900</processing-prompt-delay>
+	    <tooltip-delay>800</tooltip-delay>
+	    <resend-delay>9000</resend-delay>
+		<!-- New Features of ZK 8.5.0 -->
+	    <enable-source-map>true</enable-source-map>
+	</client-config>
+	
+	<desktop-config>
+	    <desktop-timeout>-1</desktop-timeout>
+	    <!-- ZK caches the parsed result of a ZUML page and re-compiles it only if it is modified, increase this value in production environment -->
+	    <file-check-period>600</file-check-period>
+	</desktop-config>
+	
+	<device-config>	
+		<device-type>ajax</device-type>
+		<!-- An empty URL can cause the browser to reload the same URL -->
+		<timeout-uri>/timeout.zul</timeout-uri>
+		<!-- 
+		    Enable Event Queues and Server Push 
+		    when ZKEE, Use Comet for server push instead of Polling
+		    <server-push-class>org.zkoss.zk.ui.impl.PollingServerPush</server-push-class>
+			<server-push-class>org.zkoss.zkex.ui.comet.CometServerPush</server-push-class>
+		 -->
+		<server-push-class>org.zkoss.zk.ui.impl.PollingServerPush</server-push-class>
+		<embed><![CDATA[
+		 <script type="text/javascript">
+			
+			 funtion(){
+			 	var _zAuBookmark = {};
+				 var _domain = zk.ajaxURI(null, {desktop:zk.Desktop._dt}) + '/' || '';
+				 function getURI() 
+				 {
+					  var nm = location.href,
+					  start = nm.indexOf(_domain),
+					  end = nm.indexOf('#');
+					  nm = decodeURIComponent(nm.substring(start + _domain.length, end >= 0 ? end : nm.length));
+					  return nm || "";
+			     }
+			 	 zk.override(zAu.cmd0, _zAuBookmark, 
+			     {
+					  bookmark: function(bk, replace) 
+					  {
+					   var uri = getURI();
+					   zAu.send(new zk.Event(zk.Desktop._dt, "onBookmarkSEO", {nm: bk, uri: uri}));
+					   _zAuBookmark.bookmark(bk, replace);
+					  }
+			 	});
+			 };
+			 
+			 zk.afterLoad("zk", function () {			 	 
+			 
+					var oldProgressbox = zUtl.progressbox;
+					zUtl.progressbox = function () {
+						oldProgressbox.apply(this, arguments);
+						var $mask = jq('.z-loading');
+						if ($mask) {
+							var $img = jq('.z-loading-indicator'),
+								$body = jq(document.body),
+								body = $body[0],
+								bw = $body.width() + body.scrollLeft - 10,
+								bh = $body.height() + body.scrollTop - 10;
+
+							// update mask and image's style
+							$mask.width(bw);
+							$mask.height(bh);
+							$mask.css('opacity', .75);
+
+							$img.width('150px');
+							$img.css('margin-left', (bw - $img.width()) / 2 + 'px');
+							$img.css('margin-top', (bh - $img.height()) / 2 + 'px');
+
+							// update mask size when window scroll
+							if (!window.eventBinded) {
+								var $win = jq(window);
+								$win.scroll(function () {
+									var $maskInst = jq('.z-loading');
+									if ($maskInst[0]) {
+										$maskInst.width(bw + $win.scrollLeft());
+										$maskInst.height(bh + $win.scrollTop());
+									}
+								});
+								window.eventBinded = true;
+							}
+						}
+					}
+				});
+		 </script>]]>
+		</embed>		
+	</device-config>
+	
+	<system-property>
+		<name>org.zkoss.zel.impl.parser.SKIP_IDENTIFIER_CHECK</name>
+		<value>true</value>
+	</system-property>
+	
+	<preference>
+    	<name>org.zkoss.zk.ui.WebApp.name</name>
+    	<value>SoftBS</value>
+	</preference>
+
+	<!-- ====================================================== -->
+	<!-- Path to the own error page -->
+	<!-- ====================================================== -->
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/error.zul</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>org.springframework.security.access.AccessDeniedException</exception-type>
+		<location>/accessdenied.zul</location>
+	</error-page>
+
+	<!-- 
+		<error-reload>
+			<connection-type>ajax</connection-type>
+			<error-code>402</error-code>
+			<reload-uri>/popupLogin.zul</reload-uri>
+		</error-reload>
+		
+		<error-code>410</error-code>
+		<reload-uri>/timeout.zul</reload-uri>
+		<connection-type>server-push</connection-type>
+	 -->
+</zk>

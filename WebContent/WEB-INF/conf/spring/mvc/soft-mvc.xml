@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+	   http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	
+	<!-- Add support for conversion, formatting and validation support -->
+	<mvc:annotation-driven />
+
+	<!-- Add support for component scanning: Use @Controller, @Component, @Repository, @Service... annotations -->
+	<context:component-scan base-package="com.softlynx.bs.controller" />
+	
+	<mvc:default-servlet-handler />
+	
+	<!-- Define Spring MVC view resolver: Resolves views selected for rendering by @Controllers to resources in /WEB-INF/views directory -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value="" />
+		<!-- property name="suffix" value=".zul" /-->
+	</bean>
+
+	<!-- Forwards requests to the "/" resource to the "popupLogin" view -->
+    <mvc:view-controller path="/" view-name="popupLogin" />
+    
+	<!-- A handler "HTTP GET requests" for serving static resources, caching period is 14 days and 1 day -->
+	<mvc:resources mapping="/css/**" location="/css/" cache-period="1209600" />
+	<mvc:resources mapping="/images/**" location="/images/" cache-period="1209600" />
+	<mvc:resources mapping="/component/**" location="/component/" cache-period="1209600" />
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:resources mapping="/favicon.ico" location="/favicon.ico" />
+
+	<!-- /////////////////////////// Additional Configuration ///////////////////////////////  -->	
+	<!-- Fileupload capabilities -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="uploadTempDir" value="/tmp" />
+		<!-- one of the properties available; the maximum file size in bytes (10MB) 
+			The default value is ‐1, which states that there is no limit. -->
+		<property name="maxUploadSize" value="1048576" />
+		<property name="maxInMemorySize" value="524288" />
+	</bean>
+	<!-- FileUpload capabilities for servlet 3.1 -->
+	<!-- <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver" /> -->
+	
+	<!-- Internationalisation -->
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+	    <property name="defaultLocale" value="en" />
+	</bean>	
+	<bean id="cookieResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="defaultLocale" value="en" />
+        <property name="cookieName" value="softCookie" />
+        <property name="cookieMaxAge" value="3600" />
+    </bean>
+    
+	<!-- Application translation and Message Bundle -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="classpath*:messages" /> <!-- value="/WEB-INF/messages/messages" -->
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		<property name="paramName" value="softLang" />
+	</bean>
+	<bean id="handlerMapping"  class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+	   	<property name="interceptors" ref="localeChangeInterceptor" />
+    </bean>
+  
+	<!-- Enable Spring Cache -->
+	<bean id="softCacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager" />
+	
+	<!-- 
+	<bean id="themeSource" class="org.springframework.ui.context.support.ResourceBundleThemeSource" />
+	<bean id="themeResolver" class="org.springframework.web.servlet.theme.SessionThemeResolver">
+		<property name="defaultThemeName" value="dark" />
+	</bean>
+	<mvc:interceptors>
+		<bean id="themeChangeInterceptor" class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+			<property name="paramName" value="softTheme" />
+		</bean>
+	</mvc:interceptors> 
+    <bean id="cookieThemeResolver" class="org.springframework.web.servlet.theme.CookieThemeResolver" />
+	 -->
+    
+    <!-- Declare JmsTemplate with default destination, using ActiveMQ which acts as the JMS Provider -->
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616" />
+	</bean>
+	<bean id="messageDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="messageQueue1" />
+	</bean>	
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="receiveTimeout" value="10000" />
+		<!-- if default destination is defined here, 
+		 then its configuration under Producer and Consumer bean should be removed -->
+		<property name="defaultDestination" ref="messageDestination" />
+		<property name="messageConverter" ref="softMessageConverter" />
+	</bean>
+	
+	<bean id="softMessageConverter" class="com.softlynx.bs.common.jms.SoftMessageConverter" />
+	<bean id="springJmsProducer" class="com.softlynx.bs.common.jms.SoftJmsProducer">
+	<!-- <property name="destination" ref="messageDestination" /> -->
+		<property name="jmsTemplate" ref="jmsTemplate" />
+	</bean>
+	<bean id="springJmsConsumer" class="com.softlynx.bs.common.jms.SoftJmsConsumer">
+	<!-- <property name="destination" ref="messageDestination" /> -->
+		<property name="jmsTemplate" ref="jmsTemplate" />
+	</bean>
+	
+	<!-- Beans SCOPE  
+	When you define request‐ and session‐scoped beans, you have to place the <aop:scoped‐proxy/>
+	element as a child element in the <bean> element
+	 -->
+</beans>

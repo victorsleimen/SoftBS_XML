@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The contents of this file will be loaded for each web application -->
+<Context antiResourceLocking="false" cachingAllowed="false" privileged="true" path="/SoftBS" docBase="WebContent" reloadable="false" useHttpOnly="false" crossContext="true">
+		
+	<!-- Used from tomcat8 or later -->
+	<Resource name="jdbc/SoftBS" auth="Container"
+		  type="javax.sql.DataSource" driverClassName="org.mariadb.jdbc.Driver"
+		  url="jdbc:mariadb://localhost:3306/soft"
+		  username="root" password="root" maxTotal="100" maxIdle="20"
+		  validationQuery="select 1 from dual"
+		  maxWaitMillis="-1"/>
+	
+	<!-- 
+	To run tomcat with SSL support, drop the server.jks file into the tomcat conf directory and add the following connector to the server.xml file
+	<Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true" scheme="https" secure="true"
+	            clientAuth="true" sslProtocol="TLS"
+	            keystoreFile="${catalina.home}/conf/server.jks"
+	            keystoreType="JKS" keystorePass="password"
+	            truststoreFile="${catalina.home}/conf/server.jks"
+	            truststoreType="JKS" truststorePass="password"
+	/>
+	 -->
+	 
+	<!-- Used from tomcat7 or later and add antiJARLocking="true" in the Context tag -->
+	<!--
+    <Resource name="jdbc/SoftBS" auth="Container"
+		  type="javax.sql.DataSource" driverClassName="oracle.jdbc.OracleDriver"
+		  url="jdbc:oracle:thin:@localhost:1521:XE"
+		  username="softdba" password="softdba" maxActive="100" maxIdle="20"
+		  validationQuery="select 1 from dual"
+		  maxWaitMillis="-1"/>
+	-->
+</Context>

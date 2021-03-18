@@ -1,0 +1,8 @@
+<?page title="access denied" contentType="text/html;charset=UTF-8"?>
+<?init class="com.softlynx.bs.common.exceptions.AjaxAccessDeniedHandler"?>
+<zk>
+	<window title="whoops" border="normal" width="400px" height="220px">
+		<image src="images/icons/access_denied.png"></image> Access denied !!!<separator></separator>
+		<button id="login" label="Login" onClick='execution.sendRedirect("/loginAction.do")'></button>
+	</window>
+</zk>

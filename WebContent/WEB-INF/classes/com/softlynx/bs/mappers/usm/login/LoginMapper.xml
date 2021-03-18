@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softlynx.bs.mappers.usm.login.LoginMapper">
+
+	<resultMap id="userInfoResult" type="java.util.HashMap">
+		<result property="usrCode" column="usr_code" javaType="String" />
+		<result property="usrPwd" column="usr_pwd" javaType="String" />
+		<result property="lanCode" column="lan_code" javaType="String" />
+		<result property="sysLanguage" column="sysLanguage" javaType="String" />
+	</resultMap>
+
+	<select id="getUserInfo" resultMap="userInfoResult" parameterType="loginSC">
+		SELECT USER_ID USR_CODE,
+		PASS_CODE USR_PWD,
+		LAN_ID
+		LAN_CODE,
+		EMAIL SYSLANGUAGE
+		FROM CM_USER
+		WHERE LOGIN_NAME = #{loginName}
+		AND SALT_KEY = #{loginPassword}
+	</select>
+
+</mapper>

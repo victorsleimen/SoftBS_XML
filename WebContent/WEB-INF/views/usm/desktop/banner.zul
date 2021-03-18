@@ -1,0 +1,14 @@
+<div hflex="1" vflex="1" sclass="banner">
+	<hbox hflex="1" vflex="1" align="center">
+		<a href="http://www.softlynx-lb.com/">
+			<image src="/images/soft300x300.png" width="90px" />
+		</a>
+		<div width="150px">
+			<label value="Soft Business Suite" sclass="banner-head" />
+		</div>
+		<hbox apply="com.softlynx.bs.modules.usm.controller.LogoutController" hflex="1" vflex="1" pack="end" align="end">
+			<label value="${sessionScope.userCredential._username}" if="${not sessionScope.userCredential.anonymous}" />
+			<label id="logout" value="Logout" if="${not sessionScope.userCredential.anonymous}" sclass="logout" />
+		</hbox>
+	</hbox>
+</div>

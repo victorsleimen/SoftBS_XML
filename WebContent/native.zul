@@ -1,0 +1,41 @@
+<zk xmlns:n="native" xmlns:x="xhtml">
+	<window border="normal" title="native window" xmlns:ca="client/attribute">
+	</window>
+</zk>
+
+<window title="mix HTML demo" xmlns:n="native" xmlns:w="client" xmlns:ca="client/attribute">
+	<n:table border="1">
+		<n:tr id="row1">
+			<n:td>column 1</n:td>
+			<n:td>
+				<listbox id="list" mold="select">
+					<listitem label="AA" />
+					<listitem label="BB" />
+				</listbox>
+			</n:td>
+		</n:tr>
+	</n:table>
+	<button label="add"
+		w:onClick="jq('#row1').append('&lt;td>&lt;/td>')" xmlns:w="client" />
+</window>
+
+
+<html xmlns="native" xmlns:u="zul" xmlns:zk="zk">
+    <head>
+        <title>ZHTML Demo</title>
+    </head>
+    <body>
+        <script type="text/javascript">
+        function woo() { //running at the browser
+        }
+        </script>
+        <zk:zscript>
+        void addItem() { //running at the server
+        }
+        </zk:zscript>
+        <u:window title="HTML App">
+            <input type="button" value="Add Item"
+            onClick="woo()" zk:onClick="addItem()"/>
+        </u:window>
+    </body>
+</html>

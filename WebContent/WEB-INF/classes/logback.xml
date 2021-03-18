@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+			<!-- <Pattern>[%level] %d{yyyy-MM-dd HH:mm:ss} %class{0} [%method:%line] - %msg%n</Pattern> -->
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${catalina.base}/bin/logs/mybatis-softbs.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>[%level] %d{yyyy-MM-dd HH:mm:ss} %class{0} [%method:%line] - %msg%n</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${catalina.base}/bin/logs/mybatis-softbs-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>2GB</totalSizeCap>
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>2MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+
+	<appender name="htmlAppender" class="ch.qos.logback.core.FileAppender">
+		<file>log.html</file>
+		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+			<layout class="ch.qos.logback.classic.html.HTMLLayout">
+				<Pattern>%thread%level%logger%msg</Pattern>
+			</layout>
+		</encoder>
+	</appender>
+
+	<logger name="org.zkoss" level="ERROR">
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="org.springframework" level="ERROR">
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="org.springframework.security" level="ERROR">
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="org.mybatis.spring" level="ERROR">
+		<appender-ref ref="FILE" />
+	</logger>
+	
+	<logger name="com.softlynx" level="${LOG_LEVEL}" additivity="false">
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="com.softlynx.bs.mapper" level="${MYBATIS_LOG_LEVEL}" additivity="false">
+		<appender-ref ref="FILE" />
+	</logger>
+	<Logger name="net.sf.jasperreports.Report" level="${LOG_LEVEL}" additivity="false">
+		<appender-ref ref="FILE" />
+	</Logger>	
+	
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+		<!-- <appender-ref ref="FILE" /> -->
+	</root>
+</configuration>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The contents of this file will be loaded for each web application -->
+<Context antiResourceLocking="false" cachingAllowed="false" privileged="true" path="/SoftBS" docBase="WebContent" reloadable="false" useHttpOnly="false" crossContext="true">
+		
+	<!-- Used from tomcat8 or later -->
+	<!--
+	<Resource name="jdbc/SoftBS" auth="Container"
+		  type="javax.sql.DataSource" driverClassName="oracle.jdbc.OracleDriver"
+		  url="jdbc:oracle:thin:@localhost:1521:XE"
+		  username="softdba" password="softdba" maxTotal="100" maxIdle="20"
+		  validationQuery="select 1 from dual"
+		  maxWaitMillis="-1"/>
+	-->
+	
+	<!-- Used from tomcat7 or later and add antiJARLocking="true" in the Context tag -->
+    <Resource name="jdbc/SoftBS" auth="Container"
+		  type="javax.sql.DataSource" driverClassName="org.mariadb.jdbc.Driver"
+		  url="jdbc:mariadb://localhost:3306/soft"
+		  username="root" password="root" maxActive="100" maxIdle="20"
+		  validationQuery="select 1 from dual"
+		  maxWaitMillis="-1"/>
+	
+</Context>

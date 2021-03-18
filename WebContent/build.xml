@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SoftLynx Business Suite.jpx" basedir="." default="build.project">
+
+	<property name="webpath" value="D:/workspaces/SoftBS/Tomcat_softbs/webapps" />
+	<property name="tomcatPath" value="D:/workspaces/SoftBS/Tomcat_softbs" />
+	<property name="build" value="D:/workspaces/SoftBS/Tomcat_softbs/build" />
+	<property name="webapp.root" value="D:/workspaces/SoftBS/Tomcat_softbs/webapps/ROOT" />
+	<property name="server.path" value="D:/workspaces/SoftBS/Tomcat_softbs" />
+	<tstamp>
+		<format property="TODAY_MY" pattern="yyyyMMdd-HHmmss" locale="en,UK" />
+	</tstamp>
+	
+	<target name="build.project">
+		<echo message="deleting suite.war ....." />
+		<delete file="${build}/suite.war" />
+		<echo message="suite.war is deleted....." />
+
+		<echo message="creating softlynx.jar ....." />
+		<delete file="${build}/ROOT/WEB-INF/lib/softlynx.jar" />
+		<jar destfile="${build}/ROOT/WEB-INF/lib/softlynx.jar"
+			basedir="${webpath}/ROOT/WEB-INF/classes" includes="ssdn/**" />
+		<echo message="softlynx.jar is created" />
+
+		<delete file="${build}/ROOT/**" excludes="WEB-INF" />
+		<copy todir="${build}/ROOT/" overwrite="true">
+			<fileset file="${tomcatPath}\webapps\ROOT\**" excludes="WEB-INF" />
+		</copy>
+
+		<delete file="${build}/ROOT/WEB-INF/conf/**/**" />
+		<copy todir="${build}/ROOT/WEB-INF/conf/" overwrite="true">
+			<fileset file="${tomcatPath}\webapps\ROOT\WEB-INF\conf\**" />
+		</copy>
+
+		<delete file="${build}/ROOT/WEB-INF/views/**" />
+		<copy todir="${build}/ROOT/WEB-INF/views/" overwrite="true">
+			<fileset file="${tomcatPath}\webapps\ROOT\WEB-INF\views\**" />
+		</copy>
+
+		<echo message="creating softsuite.war ....." />
+		<delete file="${build}/suite.war" />
+		<war destfile="${build}/suite.war" webxml="${webpath}/ROOT/WEB-INF/web.xml"
+			basedir="${build}/ROOT"
+			excludes="**/classes/**,**/build.xml,**/.classpath,**/.project,**/config.properties">
+		</war>
+		
+		<echo message="the war file is created" />
+		<antcall target="take.backup" />
+	</target>
+
+	<target name="take.backup">
+		<!-- <delete file="${server.path}/${{build.date}/suite.war" /> -->
+		<echo message="the war file is taken as backup under the backup path" />
+		<copy todir="${server.path}/backup/${TODAY}" overwrite="true"> <!-- /${TODAY_MY} -->
+			<fileset file="${build}/suite.war" />
+		</copy>
+	</target>
+</project>

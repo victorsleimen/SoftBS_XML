@@ -1,0 +1,9 @@
+<?page title="Soft Business Solutions" ?>
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<?taglib uri="http://www.zkoss.org/dsp/web/theme" prefix="t"?>
+<!-- protect pages by the authentication init -->
+<?init class="com.softlynx.bs.common.security.authentication.AuthenticationInit"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+<?link rel="shortcut icon" href="favicon.ico" type="image/x-icon"?>
+<?link rel="stylesheet" type="text/css" href="/css/normalize.css"?>
