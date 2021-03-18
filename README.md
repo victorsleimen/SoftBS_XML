@@ -1,5 +1,5 @@
 # SoftBS_XML
-ZK, Spring, Mybatis web MVC application using XML Web configuration:
+Spring, ZK and myBatis MVC web application using XML Web configuration:
 - Main application configuration is set in web.xml, soft-mvc.xml, applicationContext.xml and softbs.properties files
 - Logback is used for logging
 - Additional setting are set in the following xml file:
